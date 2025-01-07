@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Game Server Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .server-form {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .server-list {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        select, input {
+            padding: 8px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Game Server Manager</h1>
+    
+    <div class="server-form">
+        <h2>Neuen Server erstellen</h2>
+        <select id="spielTyp">
+            <option value="minecraft">Minecraft</option>
+            <option value="cs">Counter-Strike</option>
+        </select>
+        <input type="number" id="port" placeholder="Port (z.B. 25565)" value="25565">
+        <button onclick="serverErstellen()">Server erstellen</button>
+    </div>
+
+    <div class="server-list">
+        <h2>Aktive Server</h2>
+        <div id="serverListe"></div>
+    </div>
+
+    <script>
+        // Server erstellen
+        async function serverErstellen() {
+            const spielTyp = document.getElementById('spielTyp').value;
+            const port = document.getElementById('port').value;
+
+            try {
+                const response = await fetch('/createServer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ spielTyp, port: parseInt(port) })
+                });
+                const data = await response.json();
+                alert(data.nachricht);
+                serverListeAktualisieren();
+            } catch (error) {
+                alert('Fehler beim Erstellen des Servers');
+            }
+        }
+
+        // Server stoppen
+        async function serverStoppen(id) {
+            try {
+                const response = await fetch('/stopServer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id })
+                });
+                const data = await response.json();
+                alert(data.nachricht);
+                serverListeAktualisieren();
+            } catch (error) {
+                alert('Fehler beim Stoppen des Servers');
+            }
+        }
+
+        // Server Liste aktualisieren
+        async function serverListeAktualisieren() {
+            const response = await fetch('/alleServer');
+            const server = await response.json();
+            const liste = document.getElementById('serverListe');
+            
+            liste.innerHTML = server.map(server => `
+                <div style="margin: 10px 0; padding: 10px; background: white; border-radius: 4px;">
+                    <strong>${server.spielTyp}</strong> (Port: ${server.port})
+                    <button onclick="serverStoppen(${server.id})" style="float: right;">
+                        Server stoppen
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Initial Liste laden
+        serverListeAktualisieren();
+    </script>
+</body>
+</html>
