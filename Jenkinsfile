@@ -10,22 +10,22 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                sh 'docker build -t gameserver/test-server .'
+                bat 'docker build -t gameserver/test-server .'
             }
         }
         stage('Push Docker Image') {
             steps {
                 echo 'Pushing Docker image to Docker Hub...'
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    sh 'docker login -u dexav1234 -p Logich22'
-                    sh 'docker push gameserver/test-server'
+                    bat 'docker login -u dexav1234 -p Logich22'
+                    bat 'docker push gameserver/test-server'
                 }
             }
         }
         stage('Deploy to Kubernetes') {
             steps {
                 echo 'Deploying to Kubernetes...'
-                sh 'kubectl apply -f kubernetes/deployment.yaml'
+                bat 'kubectl apply -f kubernetes/deployment.yaml'
             }
         }
     }
