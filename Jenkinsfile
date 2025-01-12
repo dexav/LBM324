@@ -10,15 +10,15 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                bat 'docker build -t gameserver/test-server .'
+                bat 'docker build -t dexav1234/test-server .'
             }
         }
         stage('Push Docker Image') {
             steps {
                 echo 'Pushing Docker image to Docker Hub...'
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    bat 'docker login -u dexav1234 -p Logich22'
-                    bat 'docker push gameserver/test-server'
+                    bat 'docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%'
+                    bat 'docker push dexav1234/test-server'
                 }
             }
         }
@@ -38,7 +38,7 @@ pipeline {
             echo 'Pipeline completed successfully!'
         }
         failure {
-            echo 'Pipeline failed.'
+            echo 'Pipeline failed. Check the logs for details.'
         }
     }
 }
