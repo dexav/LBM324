@@ -7,8 +7,10 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
+    "dockerode": "^4.0.0",
+    "dotenv": "^16.4.7",
     "express": "^4.18.2",
-    "dockerode": "^4.0.0"
+    "pg": "^8.10.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
